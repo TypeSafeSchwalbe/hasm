@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <script src="hasm.js"></script>
+        <script>
+            let assembler = new HasmAssembler();
+            let program = assembler.assemble("mov 69 [A]");
+            if (program instanceof HasmError) {
+                throw new Error(program.message);
+            }
+            let machine = new HasmMachine();
+            machine.run(program);
+        </script>
+    </head>
+    <body>
+
+    </body>
+</html>
