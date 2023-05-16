@@ -5,12 +5,27 @@
         <script src="hasm.js"></script>
         <script>
             let assembler = new HasmAssembler();
-            let program = assembler.assemble("mov 69 [A]");
-            if (program instanceof HasmError) {
-                throw new Error(program.message);
-            }
+            assembler.addMoveInstruction();
+            assembler.addArithmeticInstructions();
+            assembler.addConditionalInstructions();
+            assembler.addLoopInstructions();
+            assembler.addSayInstruction();
+            assembler.addRegisters("a", "b", "c", "d", "e", "f", "g", "h");
+
+            let assembled = assembler.assemble(`
+
+                    # display all numbers from 1 to 25
+                    mov 0 [a]
+                    wlt [a] 25 {
+                        add [a] 1 [a]
+                        say [a]
+                    }
+
+            `);
+            if(assembled instanceof HasmError) { throw new Error(assembled.message); }
+
             let machine = new HasmMachine();
-            machine.run(program);
+            machine.run(assembled);
         </script>
     </head>
     <body>
