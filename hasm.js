@@ -34,6 +34,7 @@ class HasmAssembler {
             (machine, value, dest) => {
                 if(value.isRegister()) { value = machine.readRegister(value); }
                 machine.writeRegister(dest, value);
+                machine.next();
             }
         );
     }
@@ -47,6 +48,7 @@ class HasmAssembler {
                 if(a.isRegister()) { a = machine.readRegister(a); }
                 if(b.isRegister()) { b = machine.readRegister(b); }
                 machine.writeRegister(dest, new HasmValue(HasmType.Number, a.getValue() + b.getValue()));
+                machine.next();
             }
         );
         this.addInstruction(
@@ -57,6 +59,7 @@ class HasmAssembler {
                 if(a.isRegister()) { a = machine.readRegister(a); }
                 if(b.isRegister()) { b = machine.readRegister(b); }
                 machine.writeRegister(dest, new HasmValue(HasmType.Number, a.getValue() - b.getValue()));
+                machine.next();
             }
         );
         this.addInstruction(
@@ -67,6 +70,7 @@ class HasmAssembler {
                 if(a.isRegister()) { a = machine.readRegister(a); }
                 if(b.isRegister()) { b = machine.readRegister(b); }
                 machine.writeRegister(dest, new HasmValue(HasmType.Number, a.getValue() * b.getValue()));
+                machine.next();
             }
         );
         this.addInstruction(
@@ -77,6 +81,7 @@ class HasmAssembler {
                 if(a.isRegister()) { a = machine.readRegister(a); }
                 if(b.isRegister()) { b = machine.readRegister(b); }
                 machine.writeRegister(dest, new HasmValue(HasmType.Number, a.getValue() / b.getValue()));
+                machine.next();
             }
         );
         this.addInstruction(
@@ -87,6 +92,7 @@ class HasmAssembler {
                 if(a.isRegister()) { a = machine.readRegister(a); }
                 if(b.isRegister()) { b = machine.readRegister(b); }
                 machine.writeRegister(dest, new HasmValue(HasmType.Number, a.getValue() % b.getValue()));
+                machine.next();
             }
         );
     }
@@ -99,7 +105,8 @@ class HasmAssembler {
             (machine, a, b, body) => {
                 if(a.isRegister()) { a = machine.readRegister(a); }
                 if(b.isRegister()) { b = machine.readRegister(b); }
-                if(a.getValue() === b.getValue()) { machine.run(body.getValue()); }
+                if(a.getValue() === b.getValue()) { machine.run(body.getValue(), machine.next); }
+                else { machine.next(); }
             }
         );
         this.addInstruction(
@@ -109,7 +116,8 @@ class HasmAssembler {
             (machine, a, b, body) => {
                 if(a.isRegister()) { a = machine.readRegister(a); }
                 if(b.isRegister()) { b = machine.readRegister(b); }
-                if(a.getValue() !== b.getValue()) { machine.run(body.getValue()); }
+                if(a.getValue() !== b.getValue()) { machine.run(body.getValue(), machine.next); }
+                else { machine.next(); }
             }
         );
         this.addInstruction(
@@ -119,7 +127,8 @@ class HasmAssembler {
             (machine, a, b, body) => {
                 if(a.isRegister()) { a = machine.readRegister(a); }
                 if(b.isRegister()) { b = machine.readRegister(b); }
-                if(a.getValue() < b.getValue()) { machine.run(body.getValue()); }
+                if(a.getValue() < b.getValue()) { machine.run(body.getValue(), machine.next); }
+                else { machine.next(); }
             }
         );
         this.addInstruction(
@@ -129,7 +138,8 @@ class HasmAssembler {
             (machine, a, b, body) => {
                 if(a.isRegister()) { a = machine.readRegister(a); }
                 if(b.isRegister()) { b = machine.readRegister(b); }
-                if(a.getValue() > b.getValue()) { machine.run(body.getValue()); }
+                if(a.getValue() > b.getValue()) { machine.run(body.getValue(), machine.next); }
+                else { machine.next(); }
             }
         );
         this.addInstruction(
@@ -139,7 +149,8 @@ class HasmAssembler {
             (machine, a, b, body) => {
                 if(a.isRegister()) { a = machine.readRegister(a); }
                 if(b.isRegister()) { b = machine.readRegister(b); }
-                if(a.getValue() <= b.getValue()) { machine.run(body.getValue()); }
+                if(a.getValue() <= b.getValue()) { machine.run(body.getValue(), machine.next); }
+                else { machine.next(); }
             }
         );
         this.addInstruction(
@@ -149,7 +160,8 @@ class HasmAssembler {
             (machine, a, b, body) => {
                 if(a.isRegister()) { a = machine.readRegister(a); }
                 if(b.isRegister()) { b = machine.readRegister(b); }
-                if(a.getValue() >= b.getValue()) { machine.run(body.getValue()); }
+                if(a.getValue() >= b.getValue()) { machine.run(body.getValue(), machine.next); }
+                else { machine.next(); }
             }
         );
     }
@@ -160,17 +172,18 @@ class HasmAssembler {
             ["the first thing to compare", "the second thing to compare", "the instructions to repeat while the compared things are equal"],
             [[HasmType.Number, HasmType.Register], [HasmType.Number, HasmType.Register], [HasmType.Block]],
             (machine, a, b, body) => {
-                while(true) {
+                const loop = () => {
                     let aVal = a;
                     if(aVal.isRegister()) { aVal = machine.readRegister(aVal); }
                     let bVal = b;
                     if(bVal.isRegister()) { bVal = machine.readRegister(bVal); }
                     if(aVal.getValue() === bVal.getValue()) {
-                        machine.run(body.getValue());
-                        continue;
+                        machine.run(body.getValue(), loop);
+                    } else {
+                        machine.next();
                     }
-                    break;
-                }
+                };
+                loop();
             }
         );
         this.addInstruction(
@@ -178,17 +191,18 @@ class HasmAssembler {
             ["the first thing to compare", "the second thing to compare", "the instructions to repeat while the compared things are not equal"],
             [[HasmType.Number, HasmType.Register], [HasmType.Number, HasmType.Register], [HasmType.Block]],
             (machine, a, b, body) => {
-                while(true) {
+                const loop = () => {
                     let aVal = a;
                     if(aVal.isRegister()) { aVal = machine.readRegister(aVal); }
                     let bVal = b;
                     if(bVal.isRegister()) { bVal = machine.readRegister(bVal); }
                     if(aVal.getValue() !== bVal.getValue()) {
-                        machine.run(body.getValue());
-                        continue;
+                        machine.run(body.getValue(), loop);
+                    } else {
+                        machine.next();
                     }
-                    break;
-                }
+                };
+                loop();
             }
         );
         this.addInstruction(
@@ -196,17 +210,18 @@ class HasmAssembler {
             ["the first thing to compare", "the second thing to compare", "the instructions to repeat while the first thing is less than the second"],
             [[HasmType.Number, HasmType.Register], [HasmType.Number, HasmType.Register], [HasmType.Block]],
             (machine, a, b, body) => {
-                while(true) {
+                const loop = () => {
                     let aVal = a;
                     if(aVal.isRegister()) { aVal = machine.readRegister(aVal); }
                     let bVal = b;
                     if(bVal.isRegister()) { bVal = machine.readRegister(bVal); }
                     if(aVal.getValue() < bVal.getValue()) {
-                        machine.run(body.getValue());
-                        continue;
+                        machine.run(body.getValue(), loop);
+                    } else {
+                        machine.next();
                     }
-                    break;
-                }
+                };
+                loop();
             }
         );
         this.addInstruction(
@@ -214,17 +229,18 @@ class HasmAssembler {
             ["the first thing to compare", "the second thing to compare", "the instructions to repeat while the first thing is greater than the second"],
             [[HasmType.Number, HasmType.Register], [HasmType.Number, HasmType.Register], [HasmType.Block]],
             (machine, a, b, body) => {
-                while(true) {
+                const loop = () => {
                     let aVal = a;
                     if(aVal.isRegister()) { aVal = machine.readRegister(aVal); }
                     let bVal = b;
                     if(bVal.isRegister()) { bVal = machine.readRegister(bVal); }
                     if(aVal.getValue() > bVal.getValue()) {
-                        machine.run(body.getValue());
-                        continue;
+                        machine.run(body.getValue(), loop);
+                    } else {
+                        machine.next();
                     }
-                    break;
-                }
+                };
+                loop();
             }
         );
         this.addInstruction(
@@ -232,17 +248,18 @@ class HasmAssembler {
             ["the first thing to compare", "the second thing to compare", "the instructions to repeat while the first thing is less than or equal to the second"],
             [[HasmType.Number, HasmType.Register], [HasmType.Number, HasmType.Register], [HasmType.Block]],
             (machine, a, b, body) => {
-                while(true) {
+                const loop = () => {
                     let aVal = a;
                     if(aVal.isRegister()) { aVal = machine.readRegister(aVal); }
                     let bVal = b;
                     if(bVal.isRegister()) { bVal = machine.readRegister(bVal); }
                     if(aVal.getValue() <= bVal.getValue()) {
-                        machine.run(body.getValue());
-                        continue;
+                        machine.run(body.getValue(), loop);
+                    } else {
+                        machine.next();
                     }
-                    break;
-                }
+                };
+                loop();
             }
         );
         this.addInstruction(
@@ -250,17 +267,30 @@ class HasmAssembler {
             ["the first thing to compare", "the second thing to compare", "the instructions to repeat while the first thing is greater than or equal to the second"],
             [[HasmType.Number, HasmType.Register], [HasmType.Number, HasmType.Register], [HasmType.Block]],
             (machine, a, b, body) => {
-                while(true) {
+                const loop = () => {
                     let aVal = a;
                     if(aVal.isRegister()) { aVal = machine.readRegister(aVal); }
                     let bVal = b;
                     if(bVal.isRegister()) { bVal = machine.readRegister(bVal); }
                     if(aVal.getValue() >= bVal.getValue()) {
-                        machine.run(body.getValue());
-                        continue;
+                        machine.run(body.getValue(), loop);
+                    } else {
+                        machine.next();
                     }
-                    break;
-                }
+                };
+                loop();
+            }
+        );
+    }
+
+    addSleepInstruction() {
+        this.addInstruction(
+            "slp",
+            ["the time to sleep in milliseconds"],
+            [[HasmType.Number, HasmType.Register]],
+            (machine, time) => {
+                if(time.isRegister()) { time = machine.readRegister(time); }
+                setTimeout(() => machine.next(), time.getValue());
             }
         );
     }
@@ -273,6 +303,7 @@ class HasmAssembler {
             (machine, thing) => {
                 if(thing.isRegister()) { thing = machine.readRegister(thing); }
                 console.log(thing.getValue());
+                machine.next();
             }
         );
     }
@@ -420,7 +451,7 @@ class HasmError {
 }
 
 class HasmProgram {
-    constructor(instructions) {
+    constructor(instructions, registers) {
         this.instructions = instructions;
     }
 }
@@ -431,23 +462,45 @@ class HasmValue {
         this.value = value;
     }
 
-    isNumber() { return this.type == HasmType.Number; }
-    isRegister() { return this.type == HasmType.Register; }
-    isBlock() { return this.type == HasmType.Block; }
+    isNumber() { return this.type === HasmType.Number; }
+    isRegister() { return this.type === HasmType.Register; }
+    isBlock() { return this.type === HasmType.Block; }
 
     getType() { return this.type; }
     getValue() { return this.value; }
 }
 
 class HasmMachine {
-    constructor() {
+    constructor(speedHz) {
         this.registers = {};
+        this.programStack = [];
     }
 
-    run(program) {
-        for(const instruction of program.instructions) {
+    setSpeed(speedHz) {
+        if(typeof speedHz !== "number") { throw new Error("speed is not a number"); }
+        this.timeout = 1000 / speedHz;
+    }
+
+    run(program, callback) {
+        if(!(program instanceof HasmProgram)) { throw new Error("invalid program"); }
+        if(typeof callback !== "function" && typeof callback !== "undefined") { throw new Error("invalid callback"); }
+        this.programStack.push({ instructions: program.instructions, callback });
+        this.next();
+    }
+
+    next() {
+        if(this.programStack.length === 0) { return; }
+        setTimeout(() => {
+            let programFrame = this.programStack[this.programStack.length - 1];
+            if(programFrame.instructions.length === 0) {
+                this.programStack.pop();
+                programFrame.callback();
+                return;
+            }
+            let instruction = programFrame.instructions[0];
+            programFrame.instructions = programFrame.instructions.slice(1);
             instruction.handler(this, ...instruction.args);
-        }
+        }, this.timeout);
     }
 
     writeRegister(register, value) {

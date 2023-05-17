@@ -9,6 +9,7 @@
             assembler.addArithmeticInstructions();
             assembler.addConditionalInstructions();
             assembler.addLoopInstructions();
+            assembler.addSleepInstruction();
             assembler.addSayInstruction();
             assembler.addRegisters("a", "b", "c", "d", "e", "f", "g", "h");
 
@@ -25,7 +26,10 @@
             if(assembled instanceof HasmError) { throw new Error(assembled.message); }
 
             let machine = new HasmMachine();
-            machine.run(assembled);
+            machine.setSpeed(25 /* hz (instructions per second) */);
+            machine.run(assembled, () => {
+                console.log("Done!");
+            });
         </script>
     </head>
     <body>
