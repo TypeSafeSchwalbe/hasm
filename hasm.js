@@ -495,7 +495,7 @@ class HasmMachine {
             let programFrame = this.programStack[this.programStack.length - 1];
             if(programFrame.instructions.length === 0) {
                 this.programStack.pop();
-                programFrame.callback();
+                if(typeof programFrame.callback === "function") { programFrame.callback(); }
                 return;
             }
             let instruction = programFrame.instructions[0];
