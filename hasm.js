@@ -471,7 +471,7 @@ class HasmValue {
 }
 
 class HasmMachine {
-    constructor(speedHz) {
+    constructor() {
         this.registers = {};
         this.programStack = [];
         this.timeout = 0;
