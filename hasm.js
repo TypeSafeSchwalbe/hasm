@@ -420,7 +420,7 @@ class HasmError {
 }
 
 class HasmProgram {
-    constructor(instructions, registers) {
+    constructor(instructions) {
         this.instructions = instructions;
     }
 }
