@@ -474,6 +474,7 @@ class HasmMachine {
     constructor(speedHz) {
         this.registers = {};
         this.programStack = [];
+        this.timeout = 0;
     }
 
     setSpeed(speedHz) {
@@ -490,7 +491,7 @@ class HasmMachine {
 
     next() {
         if(this.programStack.length === 0) { return; }
-        setTimeout(() => {
+        const runNext = () => {
             let programFrame = this.programStack[this.programStack.length - 1];
             if(programFrame.instructions.length === 0) {
                 this.programStack.pop();
@@ -500,7 +501,10 @@ class HasmMachine {
             let instruction = programFrame.instructions[0];
             programFrame.instructions = programFrame.instructions.slice(1);
             instruction.handler(this, ...instruction.args);
-        }, this.timeout);
+        };
+        if(this.timeout > 0) {
+            setTimeout(() => runNext(), this.timeout);
+        } else { runNext(); }
     }
 
     writeRegister(register, value) {
