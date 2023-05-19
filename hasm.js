@@ -347,7 +347,7 @@ class HasmAssembler {
             else if(text === "}") { type = "BlockClose"; value = null; }
             else if(text.startsWith("[") && text.endsWith("]") && text.length >= 3) { type = "Register"; value = text.substring(1, text.length - 1); }
             else if(/^[a-zA-Z]+$/.test(text)) { type = "Instruction"; value = text; }
-            else if(/^\d+(\.\d+)?$/.test(text)) { type = "Number"; value = parseFloat(text); }
+            else if(/^-?\d+(\.\d+)?$/.test(text)) { type = "Number"; value = parseFloat(text); }
             else { type = "Unknown"; value = text; }
             return { type, value };
         };
