@@ -2,7 +2,7 @@
 
 ## General instructions
 
-### `say V`(say)
+### `say V` (say)
 - `V` is a number or a register - the value you want the computer to say  
 -> `say 55` says `55`  
 -> `say 2.5` says `2.5`
