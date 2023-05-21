@@ -105,7 +105,7 @@ class HasmAssembler {
             (machine, a, b, body) => {
                 if(a.isRegister()) { a = machine.readRegister(a); }
                 if(b.isRegister()) { b = machine.readRegister(b); }
-                if(a.getValue() === b.getValue()) { machine.run(body.getValue(), machine.next); }
+                if(a.getValue() === b.getValue()) { machine.run(body.getValue(), () => machine.next()); }
                 else { machine.next(); }
             }
         );
@@ -116,7 +116,7 @@ class HasmAssembler {
             (machine, a, b, body) => {
                 if(a.isRegister()) { a = machine.readRegister(a); }
                 if(b.isRegister()) { b = machine.readRegister(b); }
-                if(a.getValue() !== b.getValue()) { machine.run(body.getValue(), machine.next); }
+                if(a.getValue() !== b.getValue()) { machine.run(body.getValue(), () => machine.next()); }
                 else { machine.next(); }
             }
         );
@@ -127,7 +127,7 @@ class HasmAssembler {
             (machine, a, b, body) => {
                 if(a.isRegister()) { a = machine.readRegister(a); }
                 if(b.isRegister()) { b = machine.readRegister(b); }
-                if(a.getValue() < b.getValue()) { machine.run(body.getValue(), machine.next); }
+                if(a.getValue() < b.getValue()) { machine.run(body.getValue(), () => machine.next()); }
                 else { machine.next(); }
             }
         );
@@ -138,7 +138,7 @@ class HasmAssembler {
             (machine, a, b, body) => {
                 if(a.isRegister()) { a = machine.readRegister(a); }
                 if(b.isRegister()) { b = machine.readRegister(b); }
-                if(a.getValue() > b.getValue()) { machine.run(body.getValue(), machine.next); }
+                if(a.getValue() > b.getValue()) { machine.run(body.getValue(), () => machine.next()); }
                 else { machine.next(); }
             }
         );
@@ -149,7 +149,7 @@ class HasmAssembler {
             (machine, a, b, body) => {
                 if(a.isRegister()) { a = machine.readRegister(a); }
                 if(b.isRegister()) { b = machine.readRegister(b); }
-                if(a.getValue() <= b.getValue()) { machine.run(body.getValue(), machine.next); }
+                if(a.getValue() <= b.getValue()) { machine.run(body.getValue(), () => machine.next()); }
                 else { machine.next(); }
             }
         );
@@ -160,7 +160,7 @@ class HasmAssembler {
             (machine, a, b, body) => {
                 if(a.isRegister()) { a = machine.readRegister(a); }
                 if(b.isRegister()) { b = machine.readRegister(b); }
-                if(a.getValue() >= b.getValue()) { machine.run(body.getValue(), machine.next); }
+                if(a.getValue() >= b.getValue()) { machine.run(body.getValue(), () => machine.next()); }
                 else { machine.next(); }
             }
         );
